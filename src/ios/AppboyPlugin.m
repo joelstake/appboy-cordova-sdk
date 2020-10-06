@@ -87,6 +87,34 @@
 }
 
 /*-------Appboy.h-------*/
+- (void)promptForPush:(CDVInvokedUrlCommand *)command {
+  UIUserNotificationType notificationSettingTypes = (UIUserNotificationTypeBadge | UIUserNotificationTypeAlert | UIUserNotificationTypeSound);
+    if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
+      UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+      // If the delegate hasn't been set yet, set it here in the plugin
+      // if (center.delegate == nil) {
+      //   center.delegate = [UIApplication sharedApplication].delegate;
+      // }
+      UNAuthorizationOptions options = UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
+      if (@available(iOS 12.0, *)) {
+        // options = options | UNAuthorizationOptionProvisional;
+      }
+      [center requestAuthorizationWithOptions:options
+                            completionHandler:^(BOOL granted, NSError *_Nullable error) {
+                              NSLog(@"Permission granted.");
+                              [[Appboy sharedInstance] pushAuthorizationFromUserNotificationCenter:granted];
+                            }];
+      [[UIApplication sharedApplication] registerForRemoteNotifications];
+    } else if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_7_1) {
+      UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:notificationSettingTypes categories:nil];
+      [[UIApplication sharedApplication] registerForRemoteNotifications];
+      [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+    } else {
+      [[UIApplication sharedApplication] registerForRemoteNotificationTypes: notificationSettingTypes];
+    }
+  }
+}
+
 - (void)changeUser:(CDVInvokedUrlCommand *)command {
   NSString *userId = [command argumentAtIndex:0 withDefault:nil];
   [[Appboy sharedInstance] changeUser:userId];

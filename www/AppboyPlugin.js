@@ -39,6 +39,14 @@ AppboyPlugin.prototype.changeUser = function (userId) {
 	cordova.exec(null, null, "AppboyPlugin", "changeUser", [userId]);
 }
 
+
+/**
+* Prompts for push
+*/
+AppboyPlugin.prototype.promptForPush = function () {
+	cordova.exec(null, null, "AppboyPlugin", "promptForPush");
+  }
+
 /**
 * ** ANDROID ONLY**
 *
