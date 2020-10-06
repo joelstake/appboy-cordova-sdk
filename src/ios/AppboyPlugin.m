@@ -73,6 +73,7 @@
       [center requestAuthorizationWithOptions:options
                             completionHandler:^(BOOL granted, NSError *_Nullable error) {
                               NSLog(@"Permission granted.");
+                              NSLog(@"Permission granted.");
                               [[Appboy sharedInstance] pushAuthorizationFromUserNotificationCenter:granted];
                             }];
       [[UIApplication sharedApplication] registerForRemoteNotifications];
@@ -105,6 +106,10 @@
                               [[Appboy sharedInstance] pushAuthorizationFromUserNotificationCenter:granted];
                             }];
       [[UIApplication sharedApplication] registerForRemoteNotifications];
+      NSString* callbackId = command.callbackId;
+      NSString* packageName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIdentifier"];
+      CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:packageName];
+      [self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
     } else if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_7_1) {
       UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:notificationSettingTypes categories:nil];
       [[UIApplication sharedApplication] registerForRemoteNotifications];
@@ -113,7 +118,7 @@
       [[UIApplication sharedApplication] registerForRemoteNotificationTypes: notificationSettingTypes];
     }
   }
-}
+
 
 - (void)changeUser:(CDVInvokedUrlCommand *)command {
   NSString *userId = [command argumentAtIndex:0 withDefault:nil];
